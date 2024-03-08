@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="SkillsDatabaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Developer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="nickname" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="DeveloperSkill">
+          <Key>
+            <PropertyRef Name="DeveloperId" />
+            <PropertyRef Name="SkillId" />
+          </Key>
+          <Property Name="DeveloperId" Type="int" Nullable="false" />
+          <Property Name="SkillId" Type="int" Nullable="false" />
+          <Property Name="SkillLevel" Type="int" />
+        </EntityType>
+        <EntityType Name="Skill">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="skill" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="description" Type="nvarchar" MaxLength="200" />
+          <Property Name="parentskill" Type="int" />
+        </EntityType>
+        <Association Name="FK_DeveloperId_Id">
+          <End Role="Developer" Type="Self.Developer" Multiplicity="1" />
+          <End Role="DeveloperSkill" Type="Self.DeveloperSkill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Developer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DeveloperSkill">
+              <PropertyRef Name="DeveloperId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Skill_Skill">
+          <End Role="Skill" Type="Self.Skill" Multiplicity="0..1" />
+          <End Role="Skill1" Type="Self.Skill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Skill">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Skill1">
+              <PropertyRef Name="parentskill" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SkillId_Skill_Id">
+          <End Role="Skill" Type="Self.Skill" Multiplicity="1" />
+          <End Role="DeveloperSkill" Type="Self.DeveloperSkill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Skill">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DeveloperSkill">
+              <PropertyRef Name="SkillId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SkillsDatabaseModelStoreContainer">
+          <EntitySet Name="Developer" EntityType="Self.Developer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DeveloperSkill" EntityType="Self.DeveloperSkill" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Skill" EntityType="Self.Skill" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_DeveloperId_Id" Association="Self.FK_DeveloperId_Id">
+            <End Role="Developer" EntitySet="Developer" />
+            <End Role="DeveloperSkill" EntitySet="DeveloperSkill" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Skill_Skill" Association="Self.FK_Skill_Skill">
+            <End Role="Skill" EntitySet="Skill" />
+            <End Role="Skill1" EntitySet="Skill" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SkillId_Skill_Id" Association="Self.FK_SkillId_Skill_Id">
+            <End Role="Skill" EntitySet="Skill" />
+            <End Role="DeveloperSkill" EntitySet="DeveloperSkill" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SkillsDatabaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Developer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="nickname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DeveloperSkills" Relationship="Self.FK_DeveloperId_Id" FromRole="Developer" ToRole="DeveloperSkill" />
+        </EntityType>
+        <EntityType Name="DeveloperSkill">
+          <Key>
+            <PropertyRef Name="DeveloperId" />
+            <PropertyRef Name="SkillId" />
+          </Key>
+          <Property Name="DeveloperId" Type="Int32" Nullable="false" />
+          <Property Name="SkillId" Type="Int32" Nullable="false" />
+          <Property Name="SkillLevel" Type="Int32" />
+          <NavigationProperty Name="Developer" Relationship="Self.FK_DeveloperId_Id" FromRole="DeveloperSkill" ToRole="Developer" />
+          <NavigationProperty Name="Skill" Relationship="Self.FK_SkillId_Skill_Id" FromRole="DeveloperSkill" ToRole="Skill" />
+        </EntityType>
+        <EntityType Name="Skill">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="skill1" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="description" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="parentskill" Type="Int32" />
+          <NavigationProperty Name="DeveloperSkills" Relationship="Self.FK_SkillId_Skill_Id" FromRole="Skill" ToRole="DeveloperSkill" />
+          <NavigationProperty Name="Skill11" Relationship="Self.FK_Skill_Skill" FromRole="Skill" ToRole="Skill1" />
+          <NavigationProperty Name="Skill2" Relationship="Self.FK_Skill_Skill" FromRole="Skill1" ToRole="Skill" />
+        </EntityType>
+        <Association Name="FK_DeveloperId_Id">
+          <End Role="Developer" Type="Self.Developer" Multiplicity="1" />
+          <End Role="DeveloperSkill" Type="Self.DeveloperSkill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Developer">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DeveloperSkill">
+              <PropertyRef Name="DeveloperId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SkillId_Skill_Id">
+          <End Role="Skill" Type="Self.Skill" Multiplicity="1" />
+          <End Role="DeveloperSkill" Type="Self.DeveloperSkill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Skill">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="DeveloperSkill">
+              <PropertyRef Name="SkillId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Skill_Skill">
+          <End Role="Skill" Type="Self.Skill" Multiplicity="0..1" />
+          <End Role="Skill1" Type="Self.Skill" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Skill">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Skill1">
+              <PropertyRef Name="parentskill" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SkillsDatabaseEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Developers" EntityType="Self.Developer" />
+          <EntitySet Name="DeveloperSkills" EntityType="Self.DeveloperSkill" />
+          <EntitySet Name="Skills" EntityType="Self.Skill" />
+          <AssociationSet Name="FK_DeveloperId_Id" Association="Self.FK_DeveloperId_Id">
+            <End Role="Developer" EntitySet="Developers" />
+            <End Role="DeveloperSkill" EntitySet="DeveloperSkills" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SkillId_Skill_Id" Association="Self.FK_SkillId_Skill_Id">
+            <End Role="Skill" EntitySet="Skills" />
+            <End Role="DeveloperSkill" EntitySet="DeveloperSkills" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Skill_Skill" Association="Self.FK_Skill_Skill">
+            <End Role="Skill" EntitySet="Skills" />
+            <End Role="Skill1" EntitySet="Skills" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SkillsDatabaseModelStoreContainer" CdmEntityContainer="SkillsDatabaseEntities">
+          <EntitySetMapping Name="Developers">
+            <EntityTypeMapping TypeName="SkillsDatabaseModel.Developer">
+              <MappingFragment StoreEntitySet="Developer">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="nickname" ColumnName="nickname" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DeveloperSkills">
+            <EntityTypeMapping TypeName="SkillsDatabaseModel.DeveloperSkill">
+              <MappingFragment StoreEntitySet="DeveloperSkill">
+                <ScalarProperty Name="DeveloperId" ColumnName="DeveloperId" />
+                <ScalarProperty Name="SkillId" ColumnName="SkillId" />
+                <ScalarProperty Name="SkillLevel" ColumnName="SkillLevel" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Skills">
+            <EntityTypeMapping TypeName="SkillsDatabaseModel.Skill">
+              <MappingFragment StoreEntitySet="Skill">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="skill1" ColumnName="skill" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="parentskill" ColumnName="parentskill" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
