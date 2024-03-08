@@ -3,6 +3,6 @@
     [skill]       NVARCHAR (50)  NOT NULL,
     [description] NVARCHAR (200) NULL,
     [link] NVARCHAR(200) NULL, 
-    PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [PK_Skill] PRIMARY KEY ([Id]) 
 );
 
