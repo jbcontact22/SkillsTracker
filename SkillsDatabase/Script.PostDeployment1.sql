@@ -18,6 +18,7 @@ GO
 */
 /*
 DELETE FROM DeveloperSkill;
+DELETE FROM SkillParents;
 DELETE FROM Developer;
 DELETE FROM Skill;
 */
@@ -60,13 +61,13 @@ USING (
         (17,'Scaffolding Skills'),
         (18,'Git and GitHub SKills'),
         (19,'Test Automatin Skills'),
-        (20,'ApplicationBuilder')
+        (20,'ApplicationBuilder'),
+        (21,'Web Developement')
     ) AS src(Id, skill)
 ON sk.Id = src.Id
-WHEN NOT MATCHED BY TARGET
-    THEN
-        INSERT (Id, skill)
-        VALUES (Id, skill);
+WHEN NOT MATCHED BY TARGET THEN
+INSERT (Id, skill)
+VALUES (Id, skill);
 
 SET IDENTITY_INSERT Skill OFF
 
@@ -79,3 +80,12 @@ ON src.developerId = ds.developerId AND src.skillId = ds.skillId
 WHEN NOT MATCHED BY TARGET THEN
 INSERT (developerId, skillId)
 VALUES (developerId, skillId);
+
+MERGE INTO SkillParents AS skp
+USING (VALUES
+(7,21),
+(13,21)) AS vals(skillId,skillParentId)
+ON vals.skillId = skp.skillId AND vals.skillParentId = skp.skillParentId
+WHEN NOT MATCHED BY TARGET THEN
+INSERT (skillId,skillParentId)
+VALUES (skillId,skillParentId);
