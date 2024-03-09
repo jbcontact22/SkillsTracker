@@ -11,25 +11,28 @@ namespace SkillsTracker.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.Data.Entity;
+
     public partial class Skill
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Skill()
         {
             this.DeveloperSkills = new HashSet<DeveloperSkill>();
-            this.Skill11 = new HashSet<Skill>();
+            this.ParentSkill = new HashSet<Skill>();
+            this.Skills = new HashSet<Skill>();
         }
-    
+
         public int Id { get; set; }
         public string skill1 { get; set; }
         public string description { get; set; }
-        public Nullable<int> parentskill { get; set; }
+        public string link { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DeveloperSkill> DeveloperSkills { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Skill> Skill11 { get; set; }
-        public virtual Skill Skill2 { get; set; }
+        public virtual ICollection<Skill> ParentSkill { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Skill> Skills { get; set; }
     }
 }

@@ -17,8 +17,7 @@ namespace SkillsTracker.Controllers
         // GET: Skills
         public ActionResult Index()
         {
-            var skills = db.Skills.Include(s => s.Skill2);
-            return View(skills.ToList());
+            return View(db.Skills.ToList());
         }
 
         // GET: Skills/Details/5
@@ -28,7 +27,7 @@ namespace SkillsTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Skill skill = db.Skills.Find(id);
+            var skill = db.Skills.Include(s => s.ParentSkill).Where(t => t.Id == id).FirstOrDefault();
             if (skill == null)
             {
                 return HttpNotFound();
@@ -39,7 +38,6 @@ namespace SkillsTracker.Controllers
         // GET: Skills/Create
         public ActionResult Create()
         {
-            ViewBag.parentskill = new SelectList(db.Skills, "Id", "skill1");
             return View();
         }
 
@@ -48,7 +46,7 @@ namespace SkillsTracker.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,skill1,description,parentskill")] Skill skill)
+        public ActionResult Create([Bind(Include = "Id,skill1,description,link")] Skill skill)
         {
             if (ModelState.IsValid)
             {
@@ -57,7 +55,6 @@ namespace SkillsTracker.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.parentskill = new SelectList(db.Skills, "Id", "skill1", skill.parentskill);
             return View(skill);
         }
 
@@ -73,7 +70,6 @@ namespace SkillsTracker.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.parentskill = new SelectList(db.Skills, "Id", "skill1", skill.parentskill);
             return View(skill);
         }
 
@@ -82,7 +78,7 @@ namespace SkillsTracker.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,skill1,description,parentskill")] Skill skill)
+        public ActionResult Edit([Bind(Include = "Id,skill1,description,link")] Skill skill)
         {
             if (ModelState.IsValid)
             {
@@ -90,7 +86,6 @@ namespace SkillsTracker.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.parentskill = new SelectList(db.Skills, "Id", "skill1", skill.parentskill);
             return View(skill);
         }
 

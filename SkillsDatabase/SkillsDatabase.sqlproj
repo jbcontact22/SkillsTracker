@@ -131,4 +131,7 @@
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment1.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="dbo\adhoc.sql" />
+  </ItemGroup>
 </Project>

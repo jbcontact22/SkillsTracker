@@ -27,13 +27,26 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Skill2.skill1)
+            @Html.DisplayNameFor(model => model.link)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Skill2.skill1)
+            @Html.DisplayFor(model => model.link)
         </dd>
 
+        @if (Model.ParentSkill.Count > 0)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.ParentSkill)
+            </dt>
+
+        }
+        @foreach (var ps in Model.ParentSkill)
+        {
+            <dd>
+                @Html.DisplayFor(modelItem => ps.skill1)
+            </dd>
+        }
     </dl>
 </div>
 <p>

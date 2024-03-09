@@ -184,8 +184,8 @@
     <Content Include="Content\Site.css" />
     <Content Include="Models\SkillsData.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>SkillsData.Context.cs</LastGenOutput>
       <DependentUpon>SkillsData.edmx</DependentUpon>
+      <LastGenOutput>SkillsData.Context.cs</LastGenOutput>
     </Content>
     <Content Include="Models\SkillsData.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -235,16 +235,16 @@
     <Content Include="Views\Developers\Details.cshtml" />
     <Content Include="Views\Developers\Edit.cshtml" />
     <Content Include="Views\Developers\Index.cshtml" />
-    <Content Include="Views\Skills\Create.cshtml" />
-    <Content Include="Views\Skills\Delete.cshtml" />
-    <Content Include="Views\Skills\Details.cshtml" />
-    <Content Include="Views\Skills\Edit.cshtml" />
-    <Content Include="Views\Skills\Index.cshtml" />
     <Content Include="Views\DeveloperSkills\Create.cshtml" />
     <Content Include="Views\DeveloperSkills\Delete.cshtml" />
     <Content Include="Views\DeveloperSkills\Details.cshtml" />
     <Content Include="Views\DeveloperSkills\Edit.cshtml" />
     <Content Include="Views\DeveloperSkills\Index.cshtml" />
+    <Content Include="Views\Skills\Create.cshtml" />
+    <Content Include="Views\Skills\Delete.cshtml" />
+    <Content Include="Views\Skills\Details.cshtml" />
+    <Content Include="Views\Skills\Edit.cshtml" />
+    <Content Include="Views\Skills\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
