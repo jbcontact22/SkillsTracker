@@ -1,10 +1,8 @@
 # SkillsTracker2
-I have recently been studying the Microsoft technology stack using Microsoft's online documentation.  I really like 
-the Microsoft online documentation and the various "Paths", "Skills" etc.  However, it is fairly vast and 
-deep, and keeping track of where I am with various skills is an issue.  I thought it would be nice to have a more 
-linear way to keep track of where I was in skills development and I needed a programming exercise where I could 
-practice with all of hte various skills and technologies.  SO I created this project to keep track of skills 
-and the skill level of developers with each skill.
+This application is an attempt to enable tracking a hierarchy of skills and a developer's level for each skill.  The hierarchy
+exists naturally, for example .net framework is related to c# which is reated to various major groups of c# functionality.  .net
+core is also related to c# and to an overlapping set of functionality.  The model design is basically a single of table things
+that are related and a mapping table that has a many to many relationship to the main table.
 
 ## Summary
 SkillsTracker has 3 projects.
