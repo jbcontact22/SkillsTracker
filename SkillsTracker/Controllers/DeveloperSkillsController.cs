@@ -17,10 +17,25 @@ namespace SkillsTracker.Controllers
         // GET: DeveloperSkills
         public ActionResult Index()
         {
+            ViewBag.DeveloperList = new SelectList(db.Developers, "Id", "name");
             var developerSkills = db.DeveloperSkills.Include(d => d.Developer).Include(d => d.Skill);
             return View(developerSkills.ToList());
         }
 
+        // Post: DeveloperSkills
+        [HttpPost]
+        public ActionResult Index(string developerId)
+        {
+            int devId = int.Parse(developerId);
+            ViewBag.DeveloperList = new SelectList(db.Developers, "Id", "name");
+            var developerSkills = db.DeveloperSkills.Include(d => d.Developer).Include(d => d.Skill);
+            if (null != developerId)
+            {
+                developerSkills = developerSkills.Where(x => x.DeveloperId == devId);
+            }
+            return View(developerSkills.ToList());
+        }
+        
         // GET: DeveloperSkills/Details/5
         public ActionResult Details(int? developerId, int? skillId)
         {
