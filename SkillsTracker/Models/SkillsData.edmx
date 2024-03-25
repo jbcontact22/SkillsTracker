@@ -4,7 +4,13 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="SkillsDatabaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="SkillsDatabaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="__RefactorLog">
+          <Key>
+            <PropertyRef Name="OperationKey" />
+          </Key>
+          <Property Name="OperationKey" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
         <EntityType Name="Developer">
           <Key>
             <PropertyRef Name="Id" />
@@ -21,23 +27,24 @@
           <Property Name="DeveloperId" Type="int" Nullable="false" />
           <Property Name="SkillId" Type="int" Nullable="false" />
           <Property Name="SkillLevel" Type="int" />
+          <Property Name="Notes" Type="nvarchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="Skill">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="skill" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="description" Type="nvarchar" MaxLength="200" />
           <Property Name="link" Type="nvarchar" MaxLength="200" />
         </EntityType>
         <EntityType Name="SkillParents">
           <Key>
-            <PropertyRef Name="skillId" />
-            <PropertyRef Name="skillParentId" />
+            <PropertyRef Name="childId" />
+            <PropertyRef Name="parentId" />
           </Key>
-          <Property Name="skillId" Type="int" Nullable="false" />
-          <Property Name="skillParentId" Type="int" Nullable="false" />
+          <Property Name="childId" Type="int" Nullable="false" />
+          <Property Name="parentId" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="FK_DeveloperId_Id">
           <End Role="Developer" Type="Self.Developer" Multiplicity="1" />
@@ -73,7 +80,7 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="SkillParents">
-              <PropertyRef Name="skillId" />
+              <PropertyRef Name="childId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -85,11 +92,12 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="SkillParents">
-              <PropertyRef Name="skillParentId" />
+              <PropertyRef Name="parentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="SkillsDatabaseModelStoreContainer">
+          <EntitySet Name="__RefactorLog" EntityType="Self.__RefactorLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Developer" EntityType="Self.Developer" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DeveloperSkill" EntityType="Self.DeveloperSkill" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Skill" EntityType="Self.Skill" Schema="dbo" store:Type="Tables" />
@@ -111,35 +119,25 @@
             <End Role="SkillParents" EntitySet="SkillParents" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="SkillsDatabaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityContainer Name="SkillsDatabaseEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Developers" EntityType="SkillsDatabaseModel.Developer" />
-          <EntitySet Name="DeveloperSkills" EntityType="SkillsDatabaseModel.DeveloperSkill" />
-          <EntitySet Name="Skills" EntityType="SkillsDatabaseModel.Skill" />
-          <AssociationSet Name="FK_DeveloperId_Id" Association="SkillsDatabaseModel.FK_DeveloperId_Id">
-            <End Role="Developer" EntitySet="Developers" />
-            <End Role="DeveloperSkill" EntitySet="DeveloperSkills" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SkillId_Skill_Id" Association="SkillsDatabaseModel.FK_SkillId_Skill_Id">
-            <End Role="Skill" EntitySet="Skills" />
-            <End Role="DeveloperSkill" EntitySet="DeveloperSkills" />
-          </AssociationSet>
-          <AssociationSet Name="SkillParents" Association="SkillsDatabaseModel.SkillParents">
-            <End Role="Skill" EntitySet="Skills" />
-            <End Role="Skill1" EntitySet="Skills" />
-          </AssociationSet>
-        </EntityContainer>
+        <EntityType Name="C__RefactorLog">
+          <Key>
+            <PropertyRef Name="OperationKey" />
+          </Key>
+          <Property Name="OperationKey" Type="Guid" Nullable="false" />
+        </EntityType>
         <EntityType Name="Developer">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="nickname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="DeveloperSkills" Relationship="SkillsDatabaseModel.FK_DeveloperId_Id" FromRole="Developer" ToRole="DeveloperSkill" />
+          <NavigationProperty Name="DeveloperSkills" Relationship="Self.FK_DeveloperId_Id" FromRole="Developer" ToRole="DeveloperSkill" />
         </EntityType>
         <EntityType Name="DeveloperSkill">
           <Key>
@@ -149,24 +147,25 @@
           <Property Name="DeveloperId" Type="Int32" Nullable="false" />
           <Property Name="SkillId" Type="Int32" Nullable="false" />
           <Property Name="SkillLevel" Type="Int32" />
-          <NavigationProperty Name="Developer" Relationship="SkillsDatabaseModel.FK_DeveloperId_Id" FromRole="DeveloperSkill" ToRole="Developer" />
-          <NavigationProperty Name="Skill" Relationship="SkillsDatabaseModel.FK_SkillId_Skill_Id" FromRole="DeveloperSkill" ToRole="Skill" />
+          <Property Name="Notes" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Developer" Relationship="Self.FK_DeveloperId_Id" FromRole="DeveloperSkill" ToRole="Developer" />
+          <NavigationProperty Name="Skill" Relationship="Self.FK_SkillId_Skill_Id" FromRole="DeveloperSkill" ToRole="Skill" />
         </EntityType>
         <EntityType Name="Skill">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="skill1" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="description" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="link" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="DeveloperSkills" Relationship="SkillsDatabaseModel.FK_SkillId_Skill_Id" FromRole="Skill" ToRole="DeveloperSkill" />
-          <NavigationProperty Name="ParentSkill" Relationship="SkillsDatabaseModel.SkillParents" FromRole="Skill" ToRole="Skill1" />
-          <NavigationProperty Name="Skills" Relationship="SkillsDatabaseModel.SkillParents" FromRole="Skill1" ToRole="Skill" />
+          <NavigationProperty Name="DeveloperSkills" Relationship="Self.FK_SkillId_Skill_Id" FromRole="Skill" ToRole="DeveloperSkill" />
+          <NavigationProperty Name="ChildSkill" Relationship="Self.SkillParents" FromRole="Skill" ToRole="Skill1" />
+          <NavigationProperty Name="ParentSkill" Relationship="Self.SkillParents" FromRole="Skill1" ToRole="Skill" />
         </EntityType>
         <Association Name="FK_DeveloperId_Id">
-          <End Type="SkillsDatabaseModel.Developer" Role="Developer" Multiplicity="1" />
-          <End Type="SkillsDatabaseModel.DeveloperSkill" Role="DeveloperSkill" Multiplicity="*" />
+          <End Role="Developer" Type="Self.Developer" Multiplicity="1" />
+          <End Role="DeveloperSkill" Type="Self.DeveloperSkill" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Developer">
               <PropertyRef Name="Id" />
@@ -177,8 +176,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_SkillId_Skill_Id">
-          <End Type="SkillsDatabaseModel.Skill" Role="Skill" Multiplicity="1" />
-          <End Type="SkillsDatabaseModel.DeveloperSkill" Role="DeveloperSkill" Multiplicity="*" />
+          <End Role="Skill" Type="Self.Skill" Multiplicity="1" />
+          <End Role="DeveloperSkill" Type="Self.DeveloperSkill" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Skill">
               <PropertyRef Name="Id" />
@@ -189,49 +188,75 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="SkillParents">
-          <End Type="SkillsDatabaseModel.Skill" Role="Skill" Multiplicity="*" />
-          <End Type="SkillsDatabaseModel.Skill" Role="Skill1" Multiplicity="*" />
+          <End Role="Skill" Type="Self.Skill" Multiplicity="*" />
+          <End Role="Skill1" Type="Self.Skill" Multiplicity="*" />
         </Association>
+        <EntityContainer Name="SkillsDatabaseEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C__RefactorLog" EntityType="Self.C__RefactorLog" />
+          <EntitySet Name="Developers" EntityType="Self.Developer" />
+          <EntitySet Name="DeveloperSkills" EntityType="Self.DeveloperSkill" />
+          <EntitySet Name="Skills" EntityType="Self.Skill" />
+          <AssociationSet Name="FK_DeveloperId_Id" Association="Self.FK_DeveloperId_Id">
+            <End Role="Developer" EntitySet="Developers" />
+            <End Role="DeveloperSkill" EntitySet="DeveloperSkills" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SkillId_Skill_Id" Association="Self.FK_SkillId_Skill_Id">
+            <End Role="Skill" EntitySet="Skills" />
+            <End Role="DeveloperSkill" EntitySet="DeveloperSkills" />
+          </AssociationSet>
+          <AssociationSet Name="SkillParents" Association="Self.SkillParents">
+            <End Role="Skill" EntitySet="Skills" />
+            <End Role="Skill1" EntitySet="Skills" />
+          </AssociationSet>
+        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="SkillsDatabaseModelStoreContainer" CdmEntityContainer="SkillsDatabaseEntities">
+          <EntitySetMapping Name="C__RefactorLog">
+            <EntityTypeMapping TypeName="SkillsDatabaseModel.C__RefactorLog">
+              <MappingFragment StoreEntitySet="__RefactorLog">
+                <ScalarProperty Name="OperationKey" ColumnName="OperationKey" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Developers">
             <EntityTypeMapping TypeName="SkillsDatabaseModel.Developer">
               <MappingFragment StoreEntitySet="Developer">
-                <ScalarProperty Name="nickname" ColumnName="nickname" />
-                <ScalarProperty Name="name" ColumnName="name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="nickname" ColumnName="nickname" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DeveloperSkills">
             <EntityTypeMapping TypeName="SkillsDatabaseModel.DeveloperSkill">
               <MappingFragment StoreEntitySet="DeveloperSkill">
-                <ScalarProperty Name="SkillLevel" ColumnName="SkillLevel" />
-                <ScalarProperty Name="SkillId" ColumnName="SkillId" />
                 <ScalarProperty Name="DeveloperId" ColumnName="DeveloperId" />
+                <ScalarProperty Name="SkillId" ColumnName="SkillId" />
+                <ScalarProperty Name="SkillLevel" ColumnName="SkillLevel" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Skills">
             <EntityTypeMapping TypeName="SkillsDatabaseModel.Skill">
               <MappingFragment StoreEntitySet="Skill">
-                <ScalarProperty Name="link" ColumnName="link" />
-                <ScalarProperty Name="description" ColumnName="description" />
-                <ScalarProperty Name="skill1" ColumnName="skill" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="link" ColumnName="link" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <AssociationSetMapping Name="SkillParents" TypeName="SkillsDatabaseModel.SkillParents" StoreEntitySet="SkillParents">
-            <EndProperty Name="Skill1">
-              <ScalarProperty Name="Id" ColumnName="skillParentId" />
-            </EndProperty>
             <EndProperty Name="Skill">
-              <ScalarProperty Name="Id" ColumnName="skillId" />
+              <ScalarProperty Name="Id" ColumnName="childId" />
+            </EndProperty>
+            <EndProperty Name="Skill1">
+              <ScalarProperty Name="Id" ColumnName="parentId" />
             </EndProperty>
           </AssociationSetMapping>
         </EntityContainerMapping>

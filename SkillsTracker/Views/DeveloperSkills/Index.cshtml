@@ -3,12 +3,25 @@
 @{
     ViewBag.Title = "Index";
 }
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 <h2>Index</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+
+@using (Html.BeginForm("Index", "DeveloperSkills", FormMethod.Post))
+{
+    <p>
+        Specific Developer: @Html.DropDownList("developerId", ViewBag.DeveloperList as IEnumerable<SelectListItem>, "All", new { @class = "form-control", id = "devchange" })
+    </p>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Filter" class="btn btn-default" />
+        </div>
+    </div>
+}
 <table class="table">
     <tr>
         <th>
@@ -18,28 +31,30 @@
             @Html.DisplayNameFor(model => model.Developer.name)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Skill.skill1)
+            @Html.DisplayNameFor(model => model.Skill.name)
         </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.SkillLevel)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Developer.name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Skill.skill1)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { developerId = item.DeveloperId, skillId = item.SkillId }) |
-            @Html.ActionLink("Details", "Details", new { developerId = item.DeveloperId, skillId = item.SkillId }) |
-            @Html.ActionLink("Delete", "Delete", new { developerId = item.DeveloperId, skillId = item.SkillId })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SkillLevel)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Developer.name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Skill.name)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { developerId = item.DeveloperId, skillId = item.SkillId }) |
+                @Html.ActionLink("Details", "Details", new { developerId = item.DeveloperId, skillId = item.SkillId }) |
+                @Html.ActionLink("Delete", "Delete", new { developerId = item.DeveloperId, skillId = item.SkillId })
+            </td>
+        </tr>
+    }
 
 </table>
+

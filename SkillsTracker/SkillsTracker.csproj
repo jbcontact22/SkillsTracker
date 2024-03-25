@@ -136,6 +136,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\C__RefactorLog.cs">
+      <DependentUpon>SkillsData.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Developer.cs">
       <DependentUpon>SkillsData.tt</DependentUpon>
     </Compile>
@@ -160,6 +163,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SkillsData.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\SkillCreateViewModel.cs" />
+    <Compile Include="Models\ViewModels\SkillEditViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

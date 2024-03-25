@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using SkillsTracker.Models;
+using SkillsTracker.Models.ViewModels;
 
 namespace SkillsTracker.Controllers
 {
@@ -14,13 +15,13 @@ namespace SkillsTracker.Controllers
     {
         private SkillsDatabaseEntities db = new SkillsDatabaseEntities();
 
-        // GET: Skills
+        // GET: PotentialParents
         public ActionResult Index()
         {
             return View(db.Skills.ToList());
         }
 
-        // GET: Skills/Details/5
+        // GET: PotentialParents/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -35,68 +36,149 @@ namespace SkillsTracker.Controllers
             return View(skill);
         }
 
-        // GET: Skills/Create
+        // GET: PotentialParents/Create
         public ActionResult Create()
         {
-            return View();
+            //ViewBag.SkillList = new SelectList(db.PotentialParents, "Id", "name");
+            var skillsList = db.Skills.Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = s.name
+            }).ToList();
+
+            var viewModel = new SkillCreateViewModel
+            {
+                PotentialParents = skillsList
+            };
+
+            return View(viewModel);
         }
 
-        // POST: Skills/Create
+        // POST: PotentialParents/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,skill1,description,link")] Skill skill)
+        public ActionResult Create(SkillCreateViewModel skillVM)
         {
             if (ModelState.IsValid)
             {
-                db.Skills.Add(skill);
+                if (null != skillVM.SelectedParents)
+                {
+                    var selSkills = db.Skills.Where(s => skillVM.SelectedParents.Contains(s.Id));
+
+                    foreach (var parent in selSkills)
+                    {
+                        skillVM.TheSkill.ParentSkill.Add(parent);
+                    }
+                }
+
+                db.Skills.Add(skillVM.TheSkill);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(skill);
+            // Reload PotentialParents if model validation fails
+            var skillsList = db.Skills.Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = s.name
+            }).ToList();
+
+            var viewModel = new SkillCreateViewModel
+            {
+                PotentialParents = skillsList
+            };
+
+            return View(viewModel);
         }
 
-        // GET: Skills/Edit/5
+        // GET: PotentialParents/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Skill skill = db.Skills.Find(id);
+            Skill skill = db.Skills.Include(s => s.ParentSkill).Where(t => t.Id == id).FirstOrDefault();
             if (skill == null)
             {
                 return HttpNotFound();
             }
-            return View(skill);
+
+            // Reload PotentialParents if model validation fails
+            var skillsList = db.Skills.Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = s.name
+            }).ToList();
+
+            var evm = new SkillEditViewModel
+            {
+                TheSkill = skill,
+                SelectedParents = skill.ParentSkill.Select(ps => ps.Id),
+                PotentialParents = skillsList
+            };
+            return View(evm);
         }
 
-        // POST: Skills/Edit/5
+        // POST: PotentialParents/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,skill1,description,link")] Skill skill)
+        public ActionResult Edit(SkillEditViewModel skillVM)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(skill).State = EntityState.Modified;
+                var skillToUpdate = db.Skills.Include(s => s.ParentSkill).SingleOrDefault(s => s.Id == skillVM.TheSkill.Id);
+
+                // Update skill fields here
+                skillToUpdate.description = skillVM.TheSkill.description;
+                skillToUpdate.name = skillVM.TheSkill.name;
+                skillToUpdate.link = skillVM.TheSkill.link;
+
+                // Update the ParentSkill field 
+                skillToUpdate.ParentSkill.Clear();
+                if (null != skillVM.SelectedParents)
+                {
+                    var selSkills = db.Skills.Where(s => skillVM.SelectedParents.Contains(s.Id));
+
+                    foreach (var parent in selSkills)
+                    {
+                        skillToUpdate.ParentSkill.Add(parent);
+                    }
+                }
+
+                db.Entry(skillToUpdate).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(skill);
+            // Reload PotentialParents if model validation fails
+            //var skillsList = db.ParentSkill.Select(s => new SelectListItem
+            //{
+            //    Value = s.Id.ToString(),
+            //    Text = s.name
+            //}).ToList();
+
+            //var evm = new SkillEditViewModel
+            //{
+            //    TheSkill = skillVM.,
+            //    SelectedParents = null,
+            //    PotentialParents = skillsList
+            //};
+            return View(skillVM);
         }
 
-        // GET: Skills/Delete/5
+        // GET: PotentialParents/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Skill skill = db.Skills.Find(id);
+            var skill = db.Skills.Include(s => s.ParentSkill).Where(m => m.Id == id).FirstOrDefault();
+
             if (skill == null)
             {
                 return HttpNotFound();
@@ -104,7 +186,7 @@ namespace SkillsTracker.Controllers
             return View(skill);
         }
 
-        // POST: Skills/Delete/5
+        // POST: PotentialParents/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
