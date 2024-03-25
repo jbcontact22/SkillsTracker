@@ -11,11 +11,11 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.skill1)
+            @Html.DisplayNameFor(model => model.name)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.skill1)
+            @Html.DisplayFor(model => model.name)
         </dd>
 
         <dt>
@@ -26,13 +26,16 @@
             @Html.DisplayFor(model => model.description)
         </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.link)
-        </dt>
+        @if (null != Model.link)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.link)
+            </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.link)
-        </dd>
+            <dd>
+                @Html.DisplayFor(model => model.link)
+            </dd>
+        }
 
         @if (Model.ParentSkill.Count > 0)
         {
@@ -43,7 +46,7 @@
         @foreach (var ps in Model.ParentSkill)
         {
             <dd>
-                @Html.DisplayFor(modelItem => ps.skill1)
+                @Html.DisplayFor(modelItem => ps.name)
             </dd>
         }
     </dl>

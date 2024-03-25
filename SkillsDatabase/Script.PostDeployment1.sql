@@ -63,11 +63,11 @@ USING (
         (19,'Test Automatin Skills'),
         (20,'ApplicationBuilder'),
         (21,'Web Developement')
-    ) AS src(Id, skill)
+    ) AS src(Id, name)
 ON sk.Id = src.Id
 WHEN NOT MATCHED BY TARGET THEN
-INSERT (Id, skill)
-VALUES (Id, skill);
+INSERT (Id, name)
+VALUES (Id, name);
 
 SET IDENTITY_INSERT Skill OFF
 
@@ -88,5 +88,5 @@ USING (VALUES
 (13,7)) AS vals(skillId,skillParentId)
 ON vals.skillId = skp.skillId AND vals.skillParentId = skp.skillParentId
 WHEN NOT MATCHED BY TARGET THEN
-INSERT (skillId,skillParentId)
-VALUES (skillId,skillParentId);
+INSERT (childId,parentId)
+VALUES (childId,parentId);

@@ -12,14 +12,8 @@ namespace SkillsTracker.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class DeveloperSkill
+    public partial class C__RefactorLog
     {
-        public int DeveloperId { get; set; }
-        public int SkillId { get; set; }
-        public Nullable<int> SkillLevel { get; set; }
-        public string Notes { get; set; }
-    
-        public virtual Developer Developer { get; set; }
-        public virtual Skill Skill { get; set; }
+        public System.Guid OperationKey { get; set; }
     }
 }

@@ -4,13 +4,14 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="3ea9da828bf64d83834cbe1549133257" Name="Diagram1">
-        <EntityTypeShape EntityType="SkillsDatabaseModel.Developer" Width="1.5" PointX="2.625" PointY="3.5" />
-        <EntityTypeShape EntityType="SkillsDatabaseModel.DeveloperSkill" Width="1.5" PointX="3.125" PointY="0.5" />
-        <EntityTypeShape EntityType="SkillsDatabaseModel.Skill" Width="1.5" PointX="0.75" PointY="0.625" />
-        <AssociationConnector Association="SkillsDatabaseModel.FK_DeveloperId_Id" />
-        <AssociationConnector Association="SkillsDatabaseModel.FK_SkillId_Skill_Id" />
-        <AssociationConnector Association="SkillsDatabaseModel.SkillParents" />
+      <Diagram DiagramId="2bf9b04b20a848c6a186018aa6999d7d" Name="Diagram1">
+        <EntityTypeShape EntityType="SkillsDatabaseModel.C__RefactorLog" Width="1.5" PointX="2.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="SkillsDatabaseModel.Developer" Width="1.5" PointX="0.75" PointY="5.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="SkillsDatabaseModel.DeveloperSkill" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="SkillsDatabaseModel.Skill" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
+        <AssociationConnector Association="SkillsDatabaseModel.FK_DeveloperId_Id" ManuallyRouted="false" />
+        <AssociationConnector Association="SkillsDatabaseModel.FK_SkillId_Skill_Id" ManuallyRouted="false" />
+        <AssociationConnector Association="SkillsDatabaseModel.SkillParents" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

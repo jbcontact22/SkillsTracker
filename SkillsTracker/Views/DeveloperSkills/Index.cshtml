@@ -31,7 +31,7 @@
             @Html.DisplayNameFor(model => model.Developer.name)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Skill.skill1)
+            @Html.DisplayNameFor(model => model.Skill.name)
         </th>
         <th></th>
     </tr>
@@ -46,7 +46,7 @@
                 @Html.DisplayFor(modelItem => item.Developer.name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Skill.skill1)
+                @Html.DisplayFor(modelItem => item.Skill.name)
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { developerId = item.DeveloperId, skillId = item.SkillId }) |

@@ -55,7 +55,7 @@ namespace SkillsTracker.Controllers
         public ActionResult Create()
         {
             ViewBag.DeveloperId = new SelectList(db.Developers, "Id", "name");
-            ViewBag.SkillId = new SelectList(db.Skills, "Id", "skill1");
+            ViewBag.SkillId = new SelectList(db.Skills, "Id", "name");
             return View();
         }
 
@@ -85,7 +85,7 @@ namespace SkillsTracker.Controllers
             }
 
             ViewBag.DeveloperId = new SelectList(db.Developers, "Id", "name", developerSkill.DeveloperId);
-            ViewBag.SkillId = new SelectList(db.Skills, "Id", "skill1", developerSkill.SkillId);
+            ViewBag.SkillId = new SelectList(db.Skills, "Id", "name", developerSkill.SkillId);
             return View(developerSkill);
         }
 
@@ -102,7 +102,7 @@ namespace SkillsTracker.Controllers
                 return HttpNotFound();
             }
             ViewBag.DeveloperId = new SelectList(db.Developers, "Id", "name", developerSkill.DeveloperId);
-            ViewBag.SkillId = new SelectList(db.Skills, "Id", "skill1", developerSkill.SkillId);
+            ViewBag.SkillId = new SelectList(db.Skills, "Id", "name", developerSkill.SkillId);
             return View(developerSkill);
         }
 
@@ -120,7 +120,7 @@ namespace SkillsTracker.Controllers
                 return RedirectToAction("Index");
             }
             ViewBag.DeveloperId = new SelectList(db.Developers, "Id", "name", developerSkill.DeveloperId);
-            ViewBag.SkillId = new SelectList(db.Skills, "Id", "skill1", developerSkill.SkillId);
+            ViewBag.SkillId = new SelectList(db.Skills, "Id", "name", developerSkill.SkillId);
             return View(developerSkill);
         }
 

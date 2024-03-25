@@ -134,4 +134,7 @@
   <ItemGroup>
     <None Include="dbo\adhoc.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="SkillsDatabase.refactorlog" />
+  </ItemGroup>
 </Project>

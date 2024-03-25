@@ -25,6 +25,7 @@ namespace SkillsTracker.Models
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<C__RefactorLog> C__RefactorLog { get; set; }
         public virtual DbSet<Developer> Developers { get; set; }
         public virtual DbSet<DeveloperSkill> DeveloperSkills { get; set; }
         public virtual DbSet<Skill> Skills { get; set; }
