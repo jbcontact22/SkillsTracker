@@ -160,8 +160,8 @@
           <Property Name="description" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <Property Name="link" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="DeveloperSkills" Relationship="Self.FK_SkillId_Skill_Id" FromRole="Skill" ToRole="DeveloperSkill" />
-          <NavigationProperty Name="ChildSkill" Relationship="Self.SkillParents" FromRole="Skill" ToRole="Skill1" />
-          <NavigationProperty Name="ParentSkill" Relationship="Self.SkillParents" FromRole="Skill1" ToRole="Skill" />
+          <NavigationProperty Name="ParentSkill" Relationship="Self.SkillParents" FromRole="Skill" ToRole="Skill1" />
+          <NavigationProperty Name="ChildSkill" Relationship="Self.SkillParents" FromRole="Skill1" ToRole="Skill" />
         </EntityType>
         <Association Name="FK_DeveloperId_Id">
           <End Role="Developer" Type="Self.Developer" Multiplicity="1" />

@@ -18,8 +18,8 @@ namespace SkillsTracker.Models
         public Skill()
         {
             this.DeveloperSkills = new HashSet<DeveloperSkill>();
-            this.ChildSkill = new HashSet<Skill>();
             this.ParentSkill = new HashSet<Skill>();
+            this.ChildSkill = new HashSet<Skill>();
         }
     
         public int Id { get; set; }
@@ -30,8 +30,8 @@ namespace SkillsTracker.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DeveloperSkill> DeveloperSkills { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Skill> ChildSkill { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Skill> ParentSkill { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Skill> ChildSkill { get; set; }
     }
 }
