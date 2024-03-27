@@ -60,31 +60,26 @@ namespace SkillsTracker.Tests.Controllers
 
             Skill testChildSkill;
             Skill testParentSkill;
+            List<int> excludeList = new List<int>();
             using (var context = new SkillsDatabaseEntities())
 
             {
                 // Arrange
-                // Ga random skill
+                // Get random skill.  Select another randome skill to be its parent.
+
                 testChildSkill = ModelHelper.GetRandomSkillExcluding(context.Skills,1, new int[] { }).FirstOrDefault();
                 childSkillId = testChildSkill.Id;
+                excludeList.Add(childSkillId);
+                excludeList.AddRange(testChildSkill.ParentSkill.Select(s => s.Id));
                 TestContext.WriteLine($"Test child skill: {testChildSkill.name}, Id: {childSkillId} and parents: {string.Join(",",testChildSkill.ParentSkill.Select(s => s.Id))}");
 
-                // Are there any parent Skills, pick a random one to delete or if none, add one.
-                if(testChildSkill.ParentSkill.Count() > 0)
-                {
-                    parentSkillId = ModelHelper.GetRandomSkillFromCollection(testChildSkill.ParentSkill).FirstOrDefault().Id;
-                    TestContext.WriteLine($"Randomly selected to be parent: {parentSkillId}");
-                }
-                else
-                {
-                    testParentSkill = ModelHelper.GetRandomSkillExcluding(context.Skills, 1, new int[] { childSkillId }).FirstOrDefault();
-                    Assert.IsNotNull(testParentSkill, "No parent skill determined.  Check skills in DB exist.");
-                    parentSkillId = testParentSkill.Id;
+                testParentSkill = ModelHelper.GetRandomSkillExcluding(context.Skills, 1, excludeList).FirstOrDefault();
+                Assert.IsNotNull(testParentSkill, "No parent skill determined.  Check skills exist in DB.");
+                parentSkillId = testParentSkill.Id;
 
-                    testChildSkill.ParentSkill.Add(testParentSkill);
-                    context.SaveChanges();
-                    TestContext.WriteLine($"Randomly selected to be parent: {parentSkillId}");
-                }
+                testChildSkill.ParentSkill.Add(testParentSkill);
+                context.SaveChanges();
+                TestContext.WriteLine($"Randomly selected to be parent: {parentSkillId}");                
 
                 TestContext.WriteLine($"Pretest Parents: {string.Join(",", testChildSkill.ParentSkill.Select(s => s.Id))}");
             }
@@ -102,10 +97,12 @@ namespace SkillsTracker.Tests.Controllers
             };
 
             // Act
-            var retVal = controller.Edit(model);
-            Assert.IsInstanceOfType(retVal,typeof(RedirectToRouteResult));
+            var result = controller.Edit(model);
+
+            // Assert
+            Assert.IsInstanceOfType(result,typeof(RedirectToRouteResult));
             // How to check this?
-            //Assert.AreEqual("Index", retVal.["action"]);
+            //Assert.AreEqual("Index", result.["action"]);
             using (var context = new SkillsDatabaseEntities())
             {
                 // Assert
@@ -115,6 +112,13 @@ namespace SkillsTracker.Tests.Controllers
                 var removedParent = updatedChild.ParentSkill.Where(s => s.Id == parentSkillId).FirstOrDefault();
                 Assert.IsNull(removedParent);
             }
+
+            // Cleanup
+            using (var context = new SkillsDatabaseEntities())
+            {
+                var updatedChild = context.Skills.Where(s => s.Id == childSkillId).FirstOrDefault();
+                TestContext.WriteLine($"Cleanup added Parents: {string.Join(",", addedParents)}");
+            }
         }
         [TestMethod()]
         public void EditPostAddMultiParentTest()
@@ -122,6 +126,7 @@ namespace SkillsTracker.Tests.Controllers
             int childSkillId;
             Skill testChildSkill;
             List<int> parentIds = new List<int>();
+            List<int> addedParents = new List<int>();
             using (var context = new SkillsDatabaseEntities())
 
             {
@@ -131,16 +136,16 @@ namespace SkillsTracker.Tests.Controllers
                 childSkillId = testChildSkill.Id;
                 TestContext.WriteLine($"Test child skill: {testChildSkill.name}, Id: {childSkillId} and parents: {string.Join(",", testChildSkill.ParentSkill.Select(s => s.Id))}");
 
-                // Get 3 other skills
-                parentIds.AddRange(ModelHelper.GetRandomSkillExcluding(context.Skills, 3, 
+                // Get 3 other skills not currently parents
+                addedParents.AddRange(ModelHelper.GetRandomSkillExcluding(context.Skills, 3, 
                     testChildSkill.ParentSkill.Select(s => s.Id).ToList()).Select(s => s.Id));
 
+                parentIds.AddRange(addedParents);
                 parentIds.AddRange(testChildSkill.ParentSkill.Select(s => s.Id));
 
-                TestContext.WriteLine($"Pretest Parents: {string.Join(",", parentIds)}");
+                TestContext.WriteLine($"With Added Parents: {string.Join(",", parentIds)}");
             }
 
-            // Act
             var controller = new SkillsController();
             var model = new SkillEditViewModel()
             {
@@ -149,16 +154,15 @@ namespace SkillsTracker.Tests.Controllers
                 SelectedParents = parentIds,
 
                 PotentialParents = null
-            };            
-            var retVal = controller.Edit(model);
+            };
+            
+            // Act
+            var result = controller.Edit(model);
 
-            Assert.IsInstanceOfType(retVal, typeof(RedirectToRouteResult));
-            // How to check this?
-            //Assert.AreEqual("Index", retVal.["action"]);
-
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(RedirectToRouteResult));
             using (var context = new SkillsDatabaseEntities())
             {
-                // Assert
                 var updatedChild = context.Skills.Where(s => s.Id == childSkillId).FirstOrDefault();
                 Assert.IsNotNull(updatedChild);
 
@@ -167,8 +171,45 @@ namespace SkillsTracker.Tests.Controllers
                 bool bAll = parentIds.All(id => updatedChild.ParentSkill.Select(s => s.Id).Contains(id));
                 
                 Assert.IsTrue(bAll, $"Added parent skill is not present");
-                
             }
+
+            // Cleanup
+            using (var context = new SkillsDatabaseEntities())
+            {
+
+                // TODOSKILL iterating elements of a collection in linq.
+                // TODOSKILL learn when you should use explicit loading versus lazy loading to
+                // reduce database trips and make execution more efficient, such as when you know you
+                // are going to need the data immediately.  As seen here using explicit loading with the .Include().
+                //var skill = context.Skills.Where(s => s.Id == childSkillId).FirstOrDefault();
+                var skill = context.Skills.Include(s => s.ParentSkill).FirstOrDefault(s => s.Id == childSkillId);
+
+                var parentSkillsToRemove = skill.ParentSkill.Where(ps => addedParents.Contains(ps.Id)).ToList();
+
+                foreach (var parentSkill in parentSkillsToRemove)
+                {
+                    skill.ParentSkill.Remove(parentSkill);
+                }
+
+                context.SaveChanges();
+                TestContext.WriteLine($"Cleanup added Parents: {string.Join(",", addedParents)}");
+            }
+        }
+        [TestMethod()]
+        public void EditPostInvalidModelStateTest()
+        {
+            // Arrange
+            var controller = new SkillsController();
+            var model = new SkillEditViewModel();
+            controller.ModelState.AddModelError("KEY", "An Error Message");
+
+            // Act
+            var result = controller.Edit(model);
+
+            // Assert
+            Assert.IsFalse(controller.ModelState.IsValid);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(ViewResult));
         }
 
         [TestMethod()]

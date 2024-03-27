@@ -18,7 +18,7 @@ namespace SkillsTracker.Controllers
         // GET: PotentialParents
         public ActionResult Index()
         {
-            return View(db.Skills.ToList());
+            return View(db.Skills.OrderBy(s => s.name).ToList());
         }
 
         // GET: PotentialParents/Details/5
@@ -28,7 +28,7 @@ namespace SkillsTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var skill = db.Skills.Include(s => s.ParentSkill).Where(t => t.Id == id).FirstOrDefault();
+            var skill = db.Skills.Where(t => t.Id == id).FirstOrDefault();
             if (skill == null)
             {
                 return HttpNotFound();
@@ -39,12 +39,11 @@ namespace SkillsTracker.Controllers
         // GET: PotentialParents/Create
         public ActionResult Create()
         {
-            //ViewBag.SkillList = new SelectList(db.PotentialParents, "Id", "name");
             var skillsList = db.Skills.Select(s => new SelectListItem
             {
                 Value = s.Id.ToString(),
                 Text = s.name
-            }).ToList();
+            }).OrderBy(s => s.Text).ToList();
 
             var viewModel = new SkillCreateViewModel
             {
@@ -83,7 +82,7 @@ namespace SkillsTracker.Controllers
             {
                 Value = s.Id.ToString(),
                 Text = s.name
-            }).ToList();
+            }).OrderBy(s => s.Text).ToList();
 
             var viewModel = new SkillCreateViewModel
             {
@@ -111,7 +110,7 @@ namespace SkillsTracker.Controllers
             {
                 Value = s.Id.ToString(),
                 Text = s.name
-            }).ToList();
+            }).OrderBy(s => s.Text).ToList();
 
             var evm = new SkillEditViewModel
             {
@@ -154,19 +153,16 @@ namespace SkillsTracker.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            // Reload PotentialParents if model validation fails
-            //var skillsList = db.ParentSkill.Select(s => new SelectListItem
-            //{
-            //    Value = s.Id.ToString(),
-            //    Text = s.name
-            //}).ToList();
 
-            //var evm = new SkillEditViewModel
-            //{
-            //    TheSkill = skillVM.,
-            //    SelectedParents = null,
-            //    PotentialParents = skillsList
-            //};
+            // Reload PotentialParents if model validation fails
+            var skillsList = db.Skills.Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = s.name
+            }).OrderBy(s => s.Text).ToList();
+
+            skillVM.PotentialParents = skillsList;
+
             return View(skillVM);
         }
 
