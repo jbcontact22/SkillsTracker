@@ -6,50 +6,69 @@
 
 <h2>Details</h2>
 
-<div>
+<div class="container">
+
     <h4>Skill</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.name)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.description)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.description)
-        </dd>
-
-        @if (null != Model.link)
-        {
+    <div class="row">
+        <hr />
+        <!-- Top Pane -->
+        <dl class="dl-horizontal">
             <dt>
-                @Html.DisplayNameFor(model => model.link)
+                @Html.DisplayNameFor(model => model.name)
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.link)
+                @Html.DisplayFor(model => model.name)
             </dd>
-        }
 
-        @if (Model.ParentSkill.Count > 0)
-        {
             <dt>
-                @Html.DisplayNameFor(model => model.ParentSkill)
+                @Html.DisplayNameFor(model => model.description)
             </dt>
-        }
-        @foreach (var ps in Model.ParentSkill)
-        {
+
             <dd>
-                @Html.DisplayFor(modelItem => ps.name)
+                @Html.DisplayFor(model => model.description)
             </dd>
-        }
-    </dl>
+
+            @if (null != Model.link)
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.link)
+                </dt>
+                <dd>
+                    <a href="@Model.link" target="_blank">Related Doc</a>
+                </dd>
+            }
+        </dl>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <dl>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ParentSkill)
+                </dt>
+                @foreach (var ps in Model.ParentSkill)
+                {
+                    <dd>
+                        @Html.ActionLink(ps.name, "Details", new { id = ps.Id })
+                    </dd>
+                }
+            </dl>
+        </div>
+        <div class="col-md-6">
+            <dl>
+                <dt>
+                    @Html.DisplayNameFor(model => model.ChildSkill)
+                </dt>
+                @foreach (var ps in Model.ChildSkill)
+                {
+                    <dd>
+                        @Html.ActionLink(ps.name, "Details", new { id = ps.Id })
+                    </dd>
+                }
+            </dl>
+        </div>
+    </div>
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |

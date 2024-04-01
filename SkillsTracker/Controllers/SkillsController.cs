@@ -18,7 +18,7 @@ namespace SkillsTracker.Controllers
         // GET: PotentialParents
         public ActionResult Index()
         {
-            return View(db.Skills.ToList());
+            return View(db.Skills.OrderBy(s => s.name).ToList());
         }
 
         // GET: PotentialParents/Details/5
@@ -28,7 +28,7 @@ namespace SkillsTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var skill = db.Skills.Include(s => s.ParentSkill).Where(t => t.Id == id).FirstOrDefault();
+            var skill = db.Skills.Where(t => t.Id == id).FirstOrDefault();
             if (skill == null)
             {
                 return HttpNotFound();
@@ -39,16 +39,15 @@ namespace SkillsTracker.Controllers
         // GET: PotentialParents/Create
         public ActionResult Create()
         {
-            //ViewBag.SkillList = new SelectList(db.PotentialParents, "Id", "name");
             var skillsList = db.Skills.Select(s => new SelectListItem
             {
                 Value = s.Id.ToString(),
                 Text = s.name
-            }).ToList();
+            }).OrderBy(s => s.Text).ToList();
 
             var viewModel = new SkillCreateViewModel
             {
-                PotentialParents = skillsList
+                PotentialParents = skillsList,
             };
 
             return View(viewModel);
@@ -72,6 +71,15 @@ namespace SkillsTracker.Controllers
                         skillVM.TheSkill.ParentSkill.Add(parent);
                     }
                 }
+                if (null != skillVM.SelectedChildren)
+                {
+                    var selSkills = db.Skills.Where(s => skillVM.SelectedChildren.Contains(s.Id));
+
+                    foreach (var child in selSkills)
+                    {
+                        skillVM.TheSkill.ChildSkill.Add(child);
+                    }
+                }
 
                 db.Skills.Add(skillVM.TheSkill);
                 db.SaveChanges();
@@ -83,7 +91,7 @@ namespace SkillsTracker.Controllers
             {
                 Value = s.Id.ToString(),
                 Text = s.name
-            }).ToList();
+            }).OrderBy(s => s.Text).ToList();
 
             var viewModel = new SkillCreateViewModel
             {
@@ -100,7 +108,7 @@ namespace SkillsTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Skill skill = db.Skills.Include(s => s.ParentSkill).Where(t => t.Id == id).FirstOrDefault();
+            Skill skill = db.Skills.Include(s => s.ParentSkill).Include(s => s.ChildSkill).Where(t => t.Id == id).FirstOrDefault();
             if (skill == null)
             {
                 return HttpNotFound();
@@ -111,12 +119,13 @@ namespace SkillsTracker.Controllers
             {
                 Value = s.Id.ToString(),
                 Text = s.name
-            }).ToList();
+            }).OrderBy(s => s.Text).ToList();
 
             var evm = new SkillEditViewModel
             {
                 TheSkill = skill,
                 SelectedParents = skill.ParentSkill.Select(ps => ps.Id),
+                SelectedChildren = skill.ChildSkill.Select(ps => ps.Id),
                 PotentialParents = skillsList
             };
             return View(evm);
@@ -149,24 +158,32 @@ namespace SkillsTracker.Controllers
                         skillToUpdate.ParentSkill.Add(parent);
                     }
                 }
+                // Update the ChildSkill field 
+                skillToUpdate.ChildSkill.Clear();
+                if (null != skillVM.SelectedChildren)
+                {
+                    var selSkills = db.Skills.Where(s => skillVM.SelectedChildren.Contains(s.Id));
+
+                    foreach (var child in selSkills)
+                    {
+                        skillToUpdate.ChildSkill.Add(child);
+                    }
+                }
 
                 db.Entry(skillToUpdate).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            // Reload PotentialParents if model validation fails
-            //var skillsList = db.ParentSkill.Select(s => new SelectListItem
-            //{
-            //    Value = s.Id.ToString(),
-            //    Text = s.name
-            //}).ToList();
 
-            //var evm = new SkillEditViewModel
-            //{
-            //    TheSkill = skillVM.,
-            //    SelectedParents = null,
-            //    PotentialParents = skillsList
-            //};
+            // Reload PotentialParents if model validation fails
+            var skillsList = db.Skills.Select(s => new SelectListItem
+            {
+                Value = s.Id.ToString(),
+                Text = s.name
+            }).OrderBy(s => s.Text).ToList();
+
+            skillVM.PotentialParents = skillsList;
+
             return View(skillVM);
         }
 
@@ -192,6 +209,11 @@ namespace SkillsTracker.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Skill skill = db.Skills.Find(id);
+
+            // Must remove any records in the skillparents table where 
+            // this is a parent id
+            db.Database.ExecuteSqlCommand("DELETE FROM SkillParents WHERE ParentId = @p0 OR ChildId = @p0", skill.Id);
+
             db.Skills.Remove(skill);
             db.SaveChanges();
             return RedirectToAction("Index");

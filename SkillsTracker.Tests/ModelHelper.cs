@@ -27,8 +27,6 @@ namespace SkillsTracker.Tests
                         .Take(numEntities);
 
             return randomEntity;
-            
-
         }
 
         public static IEnumerable<Skill> GetRandomSkillFromCollection(ICollection<Skill> parents, int numEntities = 1)

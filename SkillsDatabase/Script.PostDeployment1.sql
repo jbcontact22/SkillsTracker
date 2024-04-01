@@ -85,8 +85,8 @@ MERGE INTO SkillParents AS skp
 USING (VALUES
 (7,21),
 (13,21),
-(13,7)) AS vals(skillId,skillParentId)
-ON vals.skillId = skp.skillId AND vals.skillParentId = skp.skillParentId
+(13,7)) AS vals(childId,parentId)
+ON vals.childId = skp.childId AND vals.parentId = skp.parentId
 WHEN NOT MATCHED BY TARGET THEN
 INSERT (childId,parentId)
 VALUES (childId,parentId);
