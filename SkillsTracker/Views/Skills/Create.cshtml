@@ -40,10 +40,18 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.SelectedParents, "Parent TheSkill", htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.LabelFor(model => model.SelectedParents, "Parent Skill", htmlAttributes: new { @class = "control-label col-md-2" })
         <div>
-            @Html.ListBoxFor(model => model.SelectedParents , Model.PotentialParents, new { @class = "form-control", id = "devchange" })
+            @Html.ListBoxFor(model => model.SelectedParents, Model.PotentialParents, new { @class = "form-control", id = "devchange" })
             @Html.ValidationMessageFor(model => model.SelectedParents, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.SelectedChildren, "Child Skill", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div>
+            @Html.ListBoxFor(model => model.SelectedChildren, Model.PotentialParents, new { @class = "form-control", id = "devchange" })
+            @Html.ValidationMessageFor(model => model.SelectedChildren, "", new { @class = "text-danger" })
         </div>
     </div>
 

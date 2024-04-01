@@ -16,36 +16,40 @@ namespace SkillsTracker.Tests.Controllers
     {
         public TestContext TestContext { get; set; }
 
+        [Ignore]
         [TestMethod()]
         public void IndexTest()
         {
             Assert.Fail();
         }
 
+        [Ignore]
         [TestMethod()]
         public void DetailsTest()
         {
             Assert.Fail();
         }
 
+        [Ignore]
         [TestMethod()]
         public void CreateTest()
         {
             Assert.Fail();
         }
 
+        [Ignore]
         [TestMethod()]
         public void CreateTest1()
         {
             Assert.Fail();
         }
 
+        [Ignore]
         [TestMethod()]
         public void EditTestGet()
         {
             Assert.Fail();
         }
-
         [TestMethod()]
         public void EditPostDeleteParentTest()
         {
@@ -116,8 +120,22 @@ namespace SkillsTracker.Tests.Controllers
             // Cleanup
             using (var context = new SkillsDatabaseEntities())
             {
-                var updatedChild = context.Skills.Where(s => s.Id == childSkillId).FirstOrDefault();
-                TestContext.WriteLine($"Cleanup added Parents: {string.Join(",", addedParents)}");
+                // TODOSKILL iterating elements of a collection in linq.
+                // TODOSKILL learn when you should use explicit loading versus lazy loading to
+                // reduce database trips and make execution more efficient, such as when you know you
+                // are going to need the data immediately.  As seen here using explicit loading with the .Include().
+                //var skill = context.Skills.Where(s => s.Id == childSkillId).FirstOrDefault();
+                var skill = context.Skills.Include(s => s.ParentSkill).FirstOrDefault(s => s.Id == childSkillId);
+
+                var parentSkillsToRemove = skill.ParentSkill.Where(ps => testParentSkill.Id == ps.Id).ToList();
+
+                foreach (var parentSkill in parentSkillsToRemove)
+                {
+                    skill.ParentSkill.Remove(parentSkill);
+                }
+
+                context.SaveChanges();
+                TestContext.WriteLine($"Cleanup added Parents: {string.Join(",", testParentSkill.Id)}");
             }
         }
         [TestMethod()]
@@ -212,15 +230,20 @@ namespace SkillsTracker.Tests.Controllers
             Assert.IsInstanceOfType(result, typeof(ViewResult));
         }
 
+        [Ignore]
         [TestMethod()]
         public void DeleteTest()
         {
             Assert.Fail();
         }
 
+        // Test various delete scenarios
+        // Self parent, delete parent, delete child
+        [Ignore]
         [TestMethod()]
         public void DeleteConfirmedTest()
         {
+            
             Assert.Fail();
         }
     }

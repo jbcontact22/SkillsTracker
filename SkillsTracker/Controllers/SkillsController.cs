@@ -47,7 +47,7 @@ namespace SkillsTracker.Controllers
 
             var viewModel = new SkillCreateViewModel
             {
-                PotentialParents = skillsList
+                PotentialParents = skillsList,
             };
 
             return View(viewModel);
@@ -69,6 +69,15 @@ namespace SkillsTracker.Controllers
                     foreach (var parent in selSkills)
                     {
                         skillVM.TheSkill.ParentSkill.Add(parent);
+                    }
+                }
+                if (null != skillVM.SelectedChildren)
+                {
+                    var selSkills = db.Skills.Where(s => skillVM.SelectedChildren.Contains(s.Id));
+
+                    foreach (var child in selSkills)
+                    {
+                        skillVM.TheSkill.ChildSkill.Add(child);
                     }
                 }
 
@@ -99,7 +108,7 @@ namespace SkillsTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Skill skill = db.Skills.Include(s => s.ParentSkill).Where(t => t.Id == id).FirstOrDefault();
+            Skill skill = db.Skills.Include(s => s.ParentSkill).Include(s => s.ChildSkill).Where(t => t.Id == id).FirstOrDefault();
             if (skill == null)
             {
                 return HttpNotFound();
@@ -116,6 +125,7 @@ namespace SkillsTracker.Controllers
             {
                 TheSkill = skill,
                 SelectedParents = skill.ParentSkill.Select(ps => ps.Id),
+                SelectedChildren = skill.ChildSkill.Select(ps => ps.Id),
                 PotentialParents = skillsList
             };
             return View(evm);
@@ -146,6 +156,17 @@ namespace SkillsTracker.Controllers
                     foreach (var parent in selSkills)
                     {
                         skillToUpdate.ParentSkill.Add(parent);
+                    }
+                }
+                // Update the ChildSkill field 
+                skillToUpdate.ChildSkill.Clear();
+                if (null != skillVM.SelectedChildren)
+                {
+                    var selSkills = db.Skills.Where(s => skillVM.SelectedChildren.Contains(s.Id));
+
+                    foreach (var child in selSkills)
+                    {
+                        skillToUpdate.ChildSkill.Add(child);
                     }
                 }
 
@@ -188,6 +209,11 @@ namespace SkillsTracker.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Skill skill = db.Skills.Find(id);
+
+            // Must remove any records in the skillparents table where 
+            // this is a parent id
+            db.Database.ExecuteSqlCommand("DELETE FROM SkillParents WHERE ParentId = @p0 OR ChildId = @p0", skill.Id);
+
             db.Skills.Remove(skill);
             db.SaveChanges();
             return RedirectToAction("Index");

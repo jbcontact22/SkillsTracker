@@ -7,6 +7,7 @@ namespace SkillsTracker.Models.ViewModels
     {
         public Skill TheSkill { get; set; }
         public IEnumerable<int> SelectedParents { get; set; }
+        public IEnumerable<int> SelectedChildren { get; set; }
         public IEnumerable<SelectListItem> PotentialParents { get; set; }
     }
 
