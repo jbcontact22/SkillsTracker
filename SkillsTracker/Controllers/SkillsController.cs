@@ -110,6 +110,7 @@ namespace SkillsTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            
             Skill skill = db.Skills.Include(s => s.ParentSkill)
                 .Include(s => s.ChildSkill)
                 .Where(t => t.Id == id)
@@ -222,6 +223,7 @@ namespace SkillsTracker.Controllers
 
             // Must remove any records in the skillparents table where 
             // this is a parent id
+
             db.Database.ExecuteSqlCommand(
                 "DELETE FROM SkillParents WHERE ParentId = @p0 OR ChildId = @p0", skill.Id);
 
