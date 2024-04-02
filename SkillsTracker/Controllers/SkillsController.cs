@@ -64,7 +64,8 @@ namespace SkillsTracker.Controllers
             {
                 if (null != skillVM.SelectedParents)
                 {
-                    var selSkills = db.Skills.Where(s => skillVM.SelectedParents.Contains(s.Id));
+                    var selSkills = db.Skills.Where(
+                        s => skillVM.SelectedParents.Contains(s.Id));
 
                     foreach (var parent in selSkills)
                     {
@@ -73,7 +74,8 @@ namespace SkillsTracker.Controllers
                 }
                 if (null != skillVM.SelectedChildren)
                 {
-                    var selSkills = db.Skills.Where(s => skillVM.SelectedChildren.Contains(s.Id));
+                    var selSkills = db.Skills.Where(s => skillVM
+                    .SelectedChildren.Contains(s.Id));
 
                     foreach (var child in selSkills)
                     {
@@ -108,7 +110,11 @@ namespace SkillsTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Skill skill = db.Skills.Include(s => s.ParentSkill).Include(s => s.ChildSkill).Where(t => t.Id == id).FirstOrDefault();
+            Skill skill = db.Skills.Include(s => s.ParentSkill)
+                .Include(s => s.ChildSkill)
+                .Where(t => t.Id == id)
+                .FirstOrDefault();
+
             if (skill == null)
             {
                 return HttpNotFound();
@@ -140,7 +146,8 @@ namespace SkillsTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                var skillToUpdate = db.Skills.Include(s => s.ParentSkill).SingleOrDefault(s => s.Id == skillVM.TheSkill.Id);
+                var skillToUpdate = db.Skills.Include(s => s.ParentSkill)
+                    .SingleOrDefault(s => s.Id == skillVM.TheSkill.Id);
 
                 // Update skill fields here
                 skillToUpdate.description = skillVM.TheSkill.description;
@@ -151,7 +158,8 @@ namespace SkillsTracker.Controllers
                 skillToUpdate.ParentSkill.Clear();
                 if (null != skillVM.SelectedParents)
                 {
-                    var selSkills = db.Skills.Where(s => skillVM.SelectedParents.Contains(s.Id));
+                    var selSkills = db.Skills.Where(s => skillVM
+                    .SelectedParents.Contains(s.Id));
 
                     foreach (var parent in selSkills)
                     {
@@ -162,7 +170,8 @@ namespace SkillsTracker.Controllers
                 skillToUpdate.ChildSkill.Clear();
                 if (null != skillVM.SelectedChildren)
                 {
-                    var selSkills = db.Skills.Where(s => skillVM.SelectedChildren.Contains(s.Id));
+                    var selSkills = db.Skills.Where(s => skillVM
+                    .SelectedChildren.Contains(s.Id));
 
                     foreach (var child in selSkills)
                     {
@@ -194,7 +203,8 @@ namespace SkillsTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var skill = db.Skills.Include(s => s.ParentSkill).Where(m => m.Id == id).FirstOrDefault();
+            var skill = db.Skills.Include(s => s.ParentSkill)
+                .Where(m => m.Id == id).FirstOrDefault();
 
             if (skill == null)
             {
@@ -212,7 +222,8 @@ namespace SkillsTracker.Controllers
 
             // Must remove any records in the skillparents table where 
             // this is a parent id
-            db.Database.ExecuteSqlCommand("DELETE FROM SkillParents WHERE ParentId = @p0 OR ChildId = @p0", skill.Id);
+            db.Database.ExecuteSqlCommand(
+                "DELETE FROM SkillParents WHERE ParentId = @p0 OR ChildId = @p0", skill.Id);
 
             db.Skills.Remove(skill);
             db.SaveChanges();

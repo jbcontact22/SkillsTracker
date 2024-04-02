@@ -11,12 +11,16 @@ namespace SkillsTracker.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+
     public partial class DeveloperSkill
     {
         public int DeveloperId { get; set; }
         public int SkillId { get; set; }
         public Nullable<int> SkillLevel { get; set; }
+        [DisplayName("Developer Skill Notes")]
+        [StringLength(500)]
         public string Notes { get; set; }
     
         public virtual Developer Developer { get; set; }

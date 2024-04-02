@@ -34,9 +34,17 @@
             @Html.DisplayFor(model => model.Skill.name)
         </dd>
 
+        <dt>
+            @Html.DisplayNameFor(model => model.Notes)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Notes)
+        </dd>
+
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Edit", "Edit", new { developerId = Model.DeveloperId, skillId = Model.SkillId }) |
     @Html.ActionLink("Back to List", "Index")
 </p>

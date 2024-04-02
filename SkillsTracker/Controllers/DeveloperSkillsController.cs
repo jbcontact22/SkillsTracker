@@ -17,8 +17,12 @@ namespace SkillsTracker.Controllers
         // GET: DeveloperSkills
         public ActionResult Index()
         {
-            ViewBag.DeveloperList = new SelectList(db.Developers, "Id", "name");
-            var developerSkills = db.DeveloperSkills.Include(d => d.Developer).Include(d => d.Skill);
+            ViewBag.DeveloperList = new SelectList(
+                db.Developers, "Id", "name");
+
+            var developerSkills = db.DeveloperSkills
+                .Include(d => d.Developer).Include(d => d.Skill);
+
             return View(developerSkills.ToList());
         }
 
@@ -27,8 +31,13 @@ namespace SkillsTracker.Controllers
         public ActionResult Index(string developerId)
         {
             int devId = int.Parse(developerId);
-            ViewBag.DeveloperList = new SelectList(db.Developers, "Id", "name");
-            var developerSkills = db.DeveloperSkills.Include(d => d.Developer).Include(d => d.Skill);
+
+            ViewBag.DeveloperList = new SelectList(
+                db.Developers, "Id", "name");
+
+            var developerSkills = db.DeveloperSkills
+                .Include(d => d.Developer).Include(d => d.Skill);
+
             if (null != developerId)
             {
                 developerSkills = developerSkills.Where(x => x.DeveloperId == devId);
@@ -43,7 +52,10 @@ namespace SkillsTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DeveloperSkill developerSkill = db.DeveloperSkills.Find(developerId,skillId);
+
+            DeveloperSkill developerSkill = db.DeveloperSkills
+                .Find(developerId,skillId);
+
             if (developerSkill == null)
             {
                 return HttpNotFound();
@@ -54,8 +66,11 @@ namespace SkillsTracker.Controllers
         // GET: DeveloperSkills/Create
         public ActionResult Create()
         {
-            ViewBag.DeveloperId = new SelectList(db.Developers, "Id", "name");
+            ViewBag.DeveloperId = new SelectList(
+                db.Developers, "Id", "name");
+
             ViewBag.SkillId = new SelectList(db.Skills, "Id", "name");
+
             return View();
         }
 
@@ -64,16 +79,21 @@ namespace SkillsTracker.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "DeveloperId,SkillId,SkillLevel")] DeveloperSkill developerSkill)
+        public ActionResult Create(
+            [Bind(Include = "DeveloperId,SkillId,SkillLevel")] 
+            DeveloperSkill developerSkill)
         {
-            //var exists = db.DeveloperSkills.Find(new object[] { developerSkill.DeveloperId, developerSkill.SkillId});
-            var exists = db.DeveloperSkills.Find(developerSkill.DeveloperId, developerSkill.SkillId);
+            var exists = db.DeveloperSkills
+                .Find(developerSkill.DeveloperId, developerSkill.SkillId);
+
             if (null != exists)
             {
                 if (ModelState.IsValid)
                 {
-                    db.Entry(exists).CurrentValues["SkillLevel"] = developerSkill.SkillLevel;
+                    db.Entry(exists).CurrentValues["SkillLevel"] = 
+                        developerSkill.SkillLevel;
                     db.SaveChanges();
+
                     return RedirectToAction("Index");
                 }
             }
@@ -84,8 +104,12 @@ namespace SkillsTracker.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.DeveloperId = new SelectList(db.Developers, "Id", "name", developerSkill.DeveloperId);
-            ViewBag.SkillId = new SelectList(db.Skills, "Id", "name", developerSkill.SkillId);
+            ViewBag.DeveloperId = new SelectList(
+                db.Developers, "Id", "name", developerSkill.DeveloperId);
+
+            ViewBag.SkillId = new SelectList(
+                db.Skills, "Id", "name", developerSkill.SkillId);
+
             return View(developerSkill);
         }
 
@@ -96,13 +120,21 @@ namespace SkillsTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DeveloperSkill developerSkill = db.DeveloperSkills.Find(developerId,skillId);
+
+            DeveloperSkill developerSkill = db.DeveloperSkills
+                .Find(developerId,skillId);
+
             if (developerSkill == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.DeveloperId = new SelectList(db.Developers, "Id", "name", developerSkill.DeveloperId);
-            ViewBag.SkillId = new SelectList(db.Skills, "Id", "name", developerSkill.SkillId);
+
+            ViewBag.DeveloperId = new SelectList(
+                db.Developers, "Id", "name", developerSkill.DeveloperId);
+
+            ViewBag.SkillId = new SelectList(
+                db.Skills, "Id", "name", developerSkill.SkillId);
+
             return View(developerSkill);
         }
 
@@ -111,7 +143,9 @@ namespace SkillsTracker.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "DeveloperId,SkillId,SkillLevel")] DeveloperSkill developerSkill)
+        public ActionResult Edit(
+            [Bind(Include = "DeveloperId,SkillId,SkillLevel,notes")] 
+            DeveloperSkill developerSkill)
         {
             if (ModelState.IsValid)
             {
@@ -119,8 +153,13 @@ namespace SkillsTracker.Controllers
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            ViewBag.DeveloperId = new SelectList(db.Developers, "Id", "name", developerSkill.DeveloperId);
-            ViewBag.SkillId = new SelectList(db.Skills, "Id", "name", developerSkill.SkillId);
+
+            ViewBag.DeveloperId = new SelectList(
+                db.Developers, "Id", "name", developerSkill.DeveloperId);
+
+            ViewBag.SkillId = new SelectList(
+                db.Skills, "Id", "name", developerSkill.SkillId);
+
             return View(developerSkill);
         }
 
@@ -131,7 +170,9 @@ namespace SkillsTracker.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DeveloperSkill developerSkill = db.DeveloperSkills.Find(developerId,skillId);
+            DeveloperSkill developerSkill = db.DeveloperSkills
+                .Find(developerId,skillId);
+
             if (developerSkill == null)
             {
                 return HttpNotFound();
@@ -144,9 +185,13 @@ namespace SkillsTracker.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int developerId,int skillId)
         {
-            DeveloperSkill developerSkill = db.DeveloperSkills.Find(developerId,skillId);
+            DeveloperSkill developerSkill = db.DeveloperSkills
+                .Find(developerId,skillId);
+
             db.DeveloperSkills.Remove(developerSkill);
+
             db.SaveChanges();
+
             return RedirectToAction("Index");
         }
 
